@@ -37,96 +37,95 @@ class DataCollector {
       await this.page.waitForSelector('table', { timeout: 30000 });  // ✅ CHỜ TABLE XUẤT HIỆN
       }
       const data = await this.page.evaluate((dataType) => {
-        // if (dataType === 'currency') {
-        //   const table = document.querySelector('table');
-        //   if (!table) return [];
-        //   const rows = Array.from(table.querySelectorAll('tr'));
-        //   return rows.slice(1, 11).map(row => {
-        //     const cols = Array.from(row.querySelectorAll('td'));
-        //     // Lấy text trong thẻ <a> nếu có, nếu không thì lấy innerText của td
-        //     let currencyPair = 'N/A';
-        //     if (cols[1]) {
-        //       const a = cols[1].querySelector('a');
-        //       currencyPair = a ? a.textContent.trim() : cols[1].textContent.trim();
-        //     }
-        //     return {
-        //       currency_pair: currencyPair,
-        //       bid: parseFloat(cols[2]?.innerText.replace(/,/g, '')) || null,
-        //       ask: parseFloat(cols[3]?.innerText.replace(/,/g, '')) || null,
-        //       high: parseFloat(cols[4]?.innerText.replace(/,/g, '')) || null,
-        //       low: parseFloat(cols[5]?.innerText.replace(/,/g, '')) || null,
-        //       change: cols[6]?.innerText.trim() || 'N/A',
-        //       percent_change: cols[7]?.innerText.trim() || 'N/A',
-        //       date: new Date().toISOString().slice(0, 10),
-        //     };
-        //   });
-        // }
-        // if ( dataType === 'gold') {
-        //   const price = document.querySelector('[data-test="instrument-price-last"]');
-        //   const change = document.querySelector('[data-test="instrument-price-change-percent"]');
-        //   return [{
-        //     type: dataType,
-        //     price: price ? parseFloat(price.innerText.replace(/,/g, '')) : null,
-        //     change: change ? change.innerText : 'N/A',
-        //     date: new Date().toISOString().slice(0, 10),
-        //   }];
-        // }
-        // if ( dataType === 'oil') {
-        //   const price = document.querySelector('[data-test="instrument-price-last"]');
-        //   const change = document.querySelector('[data-test="instrument-price-change-percent"]');
-        //   return [{
-        //     type: dataType,
-        //     price: price ? parseFloat(price.innerText.replace(/,/g, '')) : null,
-        //     change: change ? change.innerText : 'N/A',
-        //     date: new Date().toISOString().slice(0, 10),
-        //   }];
-        // }
+        if (dataType === 'currency') {
+          const table = document.querySelector('table');
+          if (!table) return [];
+          const rows = Array.from(table.querySelectorAll('tr'));
+          return rows.slice(1, 11).map(row => {
+            const cols = Array.from(row.querySelectorAll('td'));
+            // Lấy text trong thẻ <a> nếu có, nếu không thì lấy innerText của td
+            let currencyPair = 'N/A';
+            if (cols[1]) {
+              const a = cols[1].querySelector('a');
+              currencyPair = a ? a.textContent.trim() : cols[1].textContent.trim();
+            }
+            return {
+              currency_pair: currencyPair,
+              bid: parseFloat(cols[2]?.innerText.replace(/,/g, '')) || null,
+              ask: parseFloat(cols[3]?.innerText.replace(/,/g, '')) || null,
+              high: parseFloat(cols[4]?.innerText.replace(/,/g, '')) || null,
+              low: parseFloat(cols[5]?.innerText.replace(/,/g, '')) || null,
+              change: cols[6]?.innerText.trim() || 'N/A',
+              percent_change: cols[7]?.innerText.trim() || 'N/A',
+              date: new Date().toISOString().slice(0, 10),
+            };
+          });
+        }
+        if ( dataType === 'gold') {
+          const price = document.querySelector('[data-test="instrument-price-last"]');
+          const change = document.querySelector('[data-test="instrument-price-change-percent"]');
+          return [{
+            type: dataType,
+            price: price ? parseFloat(price.innerText.replace(/,/g, '')) : null,
+            change: change ? change.innerText : 'N/A',
+            date: new Date().toISOString().slice(0, 10),
+          }];
+        }
+        if ( dataType === 'oil') {
+          const price = document.querySelector('[data-test="instrument-price-last"]');
+          const change = document.querySelector('[data-test="instrument-price-change-percent"]');
+          return [{
+            type: dataType,
+            price: price ? parseFloat(price.innerText.replace(/,/g, '')) : null,
+            change: change ? change.innerText : 'N/A',
+            date: new Date().toISOString().slice(0, 10),
+          }];
+        }
         
-        // if (dataType === 'stock') {
+        if (dataType === 'stock') {
           
-        //   const countryHeaders = Array.from(document.querySelectorAll('h2.h3LikeTitle.linkTitle'));
-        //   const dataByCountry = {};
-        //   countryHeaders.forEach(header => {
-        //     // Tìm tên quốc gia ngay phía trên bảng (element trước đó)
-        //     const countryName = header.querySelector('a')?.innerText.trim() || header.innerText.trim() || 'Unknown';
-        //     let table = header.nextElementSibling;
-        //     while (table && table.tagName !== 'TABLE') {
-        //       table = table.nextElementSibling;
-        //     }
-        //     if (!table) return;
-        //     const rows = Array.from(table.querySelectorAll('tbody tr'));
-        //     const indices = [];
-        //     rows.forEach(row => {
-        //       const cols = Array.from(row.querySelectorAll('td')); 
-        //       const index = cols[1]?.querySelector('a')?.innerText.trim() || cols[0]?.innerText.trim() || 'N/A';
-        //       const last = parseFloat(cols[2]?.innerText.replace(/,/g, '')) || null;
-        //       const high = parseFloat(cols[3]?.innerText.replace(/,/g, '')) || null;
-        //       const low = parseFloat(cols[4]?.innerText.replace(/,/g, '')) || null;
-        //       const change = cols[5]?.innerText.trim() || 'N/A';
-        //       const percent_change = cols[6]?.innerText.trim() || 'N/A';
-        //       const time = cols[7]?.innerText.trim() || 'N/A';
-        //       indices.push({
-        //         index_name: index,
-        //         last,
-        //         high,
-        //         low,
-        //         change,
-        //         percent_change,
-        //         time,
-        //         date: new Date().toISOString().slice(0, 10)
-        //       });
-        //     });
-        //     if (indices.length > 0) {
-        //       dataByCountry[countryName] = indices;
-        //     }
-        //   });
-        //   return dataByCountry;
-        // }
+          const countryHeaders = Array.from(document.querySelectorAll('h2.h3LikeTitle.linkTitle'));
+          const dataByCountry = {};
+          countryHeaders.forEach(header => {
+            // Tìm tên quốc gia ngay phía trên bảng (element trước đó)
+            const countryName = header.querySelector('a')?.innerText.trim() || header.innerText.trim() || 'Unknown';
+            let table = header.nextElementSibling;
+            while (table && table.tagName !== 'TABLE') {
+              table = table.nextElementSibling;
+            }
+            if (!table) return;
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const indices = [];
+            rows.forEach(row => {
+              const cols = Array.from(row.querySelectorAll('td')); 
+              const index = cols[1]?.querySelector('a')?.innerText.trim() || cols[0]?.innerText.trim() || 'N/A';
+              const last = parseFloat(cols[2]?.innerText.replace(/,/g, '')) || null;
+              const high = parseFloat(cols[3]?.innerText.replace(/,/g, '')) || null;
+              const low = parseFloat(cols[4]?.innerText.replace(/,/g, '')) || null;
+              const change = cols[5]?.innerText.trim() || 'N/A';
+              const percent_change = cols[6]?.innerText.trim() || 'N/A';
+              const time = cols[7]?.innerText.trim() || 'N/A';
+              indices.push({
+                index_name: index,
+                last,
+                high,
+                low,
+                change,
+                percent_change,
+                time,
+                date: new Date().toISOString().slice(0, 10)
+              });
+            });
+            if (indices.length > 0) {
+              dataByCountry[countryName] = indices;
+            }
+          });
+          return dataByCountry;
+        }
         if (dataType === 'crypto') {
           const cryptoHeaders = Array.from(document.querySelectorAll('h2.inlineblock'));
           const dataByName = {};
           cryptoHeaders.forEach(header => {
-            // Lấy tên nhóm chỉ số crypto
             const cryptoName = header.querySelector('a')?.innerText.trim() || header.innerText.trim() || 'Unknown';
             let table = header.nextElementSibling;
             while (table && table.tagName !== 'TABLE') {
